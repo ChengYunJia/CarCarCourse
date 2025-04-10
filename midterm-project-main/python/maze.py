@@ -149,7 +149,6 @@ class Maze:
         for action in actions:
             cmds += cmd[action - 1]
         log.info(cmds)
-        print(cmds)
         return cmds
 
 '''
