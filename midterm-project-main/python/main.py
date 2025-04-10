@@ -17,10 +17,10 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 # TODO : Fill in the following information
-TEAM_NAME = "YOUR_TEAM_NAME"
-SERVER_URL = "http://140.112.175.18:4000/"
-MAZE_FILE = "python/data/small_maze.csv"
-BT_PORT = "COM6"
+TEAM_NAME = "HEHEHE"
+SERVER_URL = "http://140.112.175.18:5000/"
+MAZE_FILE = "data/small_maze.csv"
+BT_PORT = "COM9"
 
 
 def parse_args():
@@ -38,7 +38,7 @@ def parse_args():
 def main(mode: int, bt_port: str, team_name: str, server_url: str, maze_file: str):
     maze = Maze(maze_file)
     point = ScoreboardServer(team_name, server_url)
-    # point = ScoreboardFake("your team name", "data/fakeUID.csv") # for local testing
+    #point = ScoreboardFake("your team name", "data/fakeUID.csv") # for local testing
     interface = BTInterface(port=bt_port)
     # TODO : Initialize necessary variables
 

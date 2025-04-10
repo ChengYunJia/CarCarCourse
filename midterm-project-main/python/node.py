@@ -1,6 +1,5 @@
 from enum import IntEnum
 
-
 # You can get the enumeration based on integer value, or make comparison
 # ex: d = Direction(1), then d would be Direction.NORTH
 # ex: print(Direction.SOUTH == 1) should return False
@@ -17,7 +16,7 @@ class Node:
     def __init__(self, index: int = 0):
         self.index = index
         # store successor as (Node, direction to node, distance)
-        self.successors = []
+        self.successors = []    
 
     def get_index(self):
         return self.index
@@ -34,11 +33,10 @@ class Node:
         # TODO : if node is adjacent to the present node, return the direction of node from the present node
         # For example, if the direction of node from the present node is EAST, then return Direction.EAST = 4
         # However, if node is not adjacent to the present node, print error message and return 0
-
-        #have changed
-        for index_node in self.successors:
-            if(index_node[0] == node):
-                return index_node[1]
+        for succ in self.successors:
+            if node == succ:
+                return succ[1]
+        print("can't find the next adjacent node\n")
         return 0
 
     def is_successor(self, node):
