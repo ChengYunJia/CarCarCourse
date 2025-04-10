@@ -30,7 +30,12 @@ class BTInterface:
 
     def send_action(self, dirc):
         # TODO : send the action to car
-        return
+        while not self.bt.serial.is_open:
+            pass
+        print("BT Connected!")
+
+        msgWrite = dirc
+        return self.bt.serial_write_string(msgWrite)
 
     def end_process(self):
         self.bt.serial_write_string("e")
