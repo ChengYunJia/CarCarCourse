@@ -21,21 +21,21 @@
 // 19    RX       <-  TX
 // TB6612, 請按照自己車上的接線寫入腳位(左右不一定要跟註解寫的一樣)
 // TODO: 請將腳位寫入下方
-#define MotorR_I1 0     // 定義 A1 接腳（右）
-#define MotorR_I2 0     // 定義 A2 接腳（右）
-#define MotorR_PWMR 0  // 定義 ENA (PWM調速) 接腳
-#define MotorL_I3 0     // 定義 B1 接腳（左）
-#define MotorL_I4 0     // 定義 B2 接腳（左）
-#define MotorL_PWML 0  // 定義 ENB (PWM調速) 接腳
+#define MotorR_I1 2     // 定義 A1 接腳（右）
+#define MotorR_I2 3     // 定義 A2 接腳（右）
+#define MotorR_PWMR 12  // 定義 ENA (PWM調速) 接腳
+#define MotorL_I3 5     // 定義 B1 接腳（左）
+#define MotorL_I4 6     // 定義 B2 接腳（左）
+#define MotorL_PWML 13  // 定義 ENB (PWM調速) 接腳
 // 循線模組, 請按照自己車上的接線寫入腳位
-#define IRpin_LL 0
-#define IRpin_L 0
-#define IRpin_M 0
-#define IRpin_R 0
-#define IRpin_RR 0
+#define IRpin_LL 32
+#define IRpin_L 34
+#define IRpin_M 36
+#define IRpin_R 38
+#define IRpin_RR 40
 // RFID, 請按照自己車上的接線寫入腳位
-#define RST_PIN 0                 // 讀卡機的重置腳位
-#define SS_PIN 0                  // 晶片選擇腳位
+#define RST_PIN 9                 // 讀卡機的重置腳位
+#define SS_PIN 53                 // 晶片選擇腳位
 MFRC522 mfrc522(SS_PIN, RST_PIN);  // 建立MFRC522物件
 /*===========================define pin & create module object===========================*/
 
@@ -79,6 +79,8 @@ int l2 = 0, l1 = 0, m0 = 0, r1 = 0, r2 = 0;  // 紅外線模組的讀值(0->whit
 int _Tp = 90;                                // set your own value for motor power
 bool state = false;     // set state to false to halt the car, set state to true to activate the car
 BT_CMD _cmd = NOTHING;  // enum for bluetooth message, reference in bluetooth.h line 2
+bool messageFlag = 0;
+char received = 'p';
 /*===========================initialize variables===========================*/
 
 /*===========================declare function prototypes===========================*/
