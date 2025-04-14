@@ -137,6 +137,7 @@ void tracking(int l2, int l1, int m0, int r1, int r2) {
     MotorWriting(adj_L * vL, adj_R * vR);
 }  // tracking
 
+//now taking one cmd at one time
 void Takeinstruct(int cmd,int l2, int l1, int m0, int r1, int r2)
 {
     switch (cmd)
@@ -199,7 +200,7 @@ void Takeinstruct(int cmd,int l2, int l1, int m0, int r1, int r2)
 
 int countWhite()
 {
-    sum_white = 0;
+    int sum_white = 0;
     for (int i = 0; i < 5; i++)
     {
         white[i] = ( digitalRead(digitalPin[i]) == WHITE );
