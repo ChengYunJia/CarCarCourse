@@ -12,7 +12,23 @@
 
 /*===========================import variable===========================*/
 int extern _Tp;
+char extern received;
 /*===========================import variable===========================*/
+
+enum DIRECTION
+{
+    GO = 1,
+    UTURN = 2,
+    RIGHT = 3,
+    LEFT = 4,
+};
+
+void MotorWriting(double, double);
+void Tracking();
+void Takeinstruct();
+int countWhite();
+
+
 
 // Write the voltage to motor.
 void MotorWriting(double vL, double vR) {
@@ -57,6 +73,31 @@ void MotorWriting(double vL, double vR) {
 //void MotorInverter(int motor, bool& dir) {
     // Hint: the value of motor_PWMR must between 0~255, cannot write negative value.
 //}  // MotorInverter
+
+void handleCommand(){
+    switch (received)
+    {
+    case 'w':
+        MotorWriting(_Tp, _Tp);
+        break;
+    case 'a':
+        MotorWriting(0, _Tp);
+        break;
+    case 's':
+        MotorWriting(-_Tp, -_Tp);
+        break;
+    case 'd':
+        MotorWriting(_Tp, 0);
+        break;
+    case 'p':
+        MotorWriting(0, 0);
+        break;
+
+    default:
+        break;
+    }
+}
+
 
 // P/PID control Tracking
 void tracking(int l2, int l1, int m0, int r1, int r2) {
