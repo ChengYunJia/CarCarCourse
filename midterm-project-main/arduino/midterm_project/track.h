@@ -23,6 +23,12 @@ enum DIRECTION
     LEFT = 4,
 };
 
+enum COLOR
+{
+    WHITE = 0,
+    BLACK = 1,
+};
+
 void MotorWriting(double, double);
 void Tracking();
 void Takeinstruct();
@@ -130,3 +136,74 @@ void tracking(int l2, int l1, int m0, int r1, int r2) {
     // end TODO
     MotorWriting(adj_L * vL, adj_R * vR);
 }  // tracking
+
+void Takeinstruct(int cmd,int l2, int l1, int m0, int r1, int r2)
+{
+    switch (cmd)
+    {
+    case GO:
+        MotorWriting(_Tp, _Tp);
+        delay(100);
+        while ( digitalRead(l1) == BLACK && digitalRead(m0) == BLACK && digitalRead(r1) == BLACK )
+        {
+            if( digitalRead(l2) == WHITE ){
+                MotorWriting(_Tp, _Tp*0.95);
+                delay(100);
+            }
+            if( digitalRead(r2) == WHITE ){
+                MotorWriting(_Tp*0.95, _Tp);
+                delay(100);
+            }
+        }
+        break;
+    case UTURN: // check
+        if( digitalRead(l2) == WHITE ){
+            MotorWriting(-_Tp * 1.3, _Tp * 0.6);
+            delay(50);
+        }
+        MotorWriting(-_Tp * 1.2, _Tp);
+        delay(300);
+        MotorWriting(-_Tp * 0.8, _Tp*0.4);
+        delay(200);
+        while ( digitalRead(l2) == WHITE && digitalRead(l1) == WHITE )
+        {
+            MotorWriting(-_Tp*0.5, _Tp*0.4);
+        }
+        MotorWriting(_Tp*1.3, _Tp*0.6);
+        delay(150);
+        break;
+    case RIGHT:
+        MotorWriting(1.2 * _Tp, _Tp / 6);
+        delay(330);
+        while ( digitalRead(l1) == WHITE && digitalRead(m0) == WHITE )
+        {
+            MotorWriting(1.2 * _Tp, _Tp / 2);
+        }
+        MotorWriting(_Tp, _Tp*1.2);
+        delay(100);
+        break;
+    case LEFT:
+        MotorWriting(_Tp / 6, 1.2 * _Tp);
+        delay(330);
+        while ( digitalRead(m0) == WHITE && digitalRead(r1) == WHITE )
+        {
+            MotorWriting(_Tp / 2, 1.2 * _Tp);
+        }
+        MotorWriting(_Tp*1.2, _Tp);
+        delay(100);
+        break;
+    }
+    
+    // Serial.println(ite);
+}
+
+int countWhite()
+{
+    sum_white = 0;
+    for (int i = 0; i < 5; i++)
+    {
+        white[i] = ( digitalRead(digitalPin[i]) == WHITE );
+        sum_white += white[i];
+    }
+    return sum_white;
+}
