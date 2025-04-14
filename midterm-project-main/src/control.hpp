@@ -1,7 +1,8 @@
 #include <Arduino.h>
 #include "pins.hpp"
+#include "btRfid.hpp"
 
-int instruction[] = {3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2}; // 1 = straight, 2 = uturn, 3 = turn right, 4 = turn left
+int instruction[] = {4, 2, 3, 2, 1, 2, 4, 2, 2, 2, 2}; // 1 = straight, 2 = uturn, 3 = turn right, 4 = turn left
 
 int ite = 0;
 int white[5] = {0, 0, 0, 0, 0};
@@ -146,37 +147,59 @@ void Takeinstruct()
     {
     case GO:
         MotorWriting(Tp, Tp);
-        delay(35000 / Tp);
+        delay(100);
+        while ( digitalRead(digitalPin[1]) == BLACK && digitalRead(digitalPin[2]) == BLACK && digitalRead(digitalPin[3]) == BLACK )
+        {
+            if( digitalRead(digitalPin[0]) == WHITE ){
+                MotorWriting(Tp, Tp*0.95);
+                delay(100);
+            }
+            if( digitalRead(digitalPin[4]) == WHITE ){
+                MotorWriting(Tp*0.95, Tp);
+                delay(100);
+            }
+        }
         break;
     case UTURN: // check
-        MotorWriting(-Tp * 1.1, Tp);
-        delay(400);
+        if( digitalRead(digitalPin[0]) == WHITE ){
+            MotorWriting(-Tp * 1.3, Tp * 0.6);
+            delay(50);
+        }
+        MotorWriting(-Tp * 1.2, Tp);
+        delay(300);
+        MotorWriting(-Tp * 0.8, Tp*0.4);
+        delay(200);
         while ( digitalRead(digitalPin[0]) == WHITE && digitalRead(digitalPin[1]) == WHITE )
         {
-            MotorWriting(-Tp*0.6, Tp*0.4);
+            MotorWriting(-Tp*0.5, Tp*0.4);
         }
         MotorWriting(Tp*1.3, Tp*0.6);
-        delay(220);
+        delay(150);
         break;
     case RIGHT:
-        MotorWriting(1.2 * Tp, Tp / 4.5);
-        delay(300);
-        while ( digitalRead(digitalPin[3]) == WHITE && digitalRead(digitalPin[4]) == WHITE )
+        MotorWriting(1.2 * Tp, Tp / 6);
+        delay(330);
+        while ( digitalRead(digitalPin[1]) == WHITE && digitalRead(digitalPin[2]) == WHITE )
         {
             MotorWriting(1.2 * Tp, Tp / 2);
         }
+        MotorWriting(Tp, Tp*1.2);
+        delay(100);
         break;
     case LEFT:
-        MotorWriting(Tp / 4.5, 1.2 * Tp);
-        delay(300);
-        while ( digitalRead(digitalPin[0]) == WHITE && digitalRead(digitalPin[1]) == WHITE )
+        MotorWriting(Tp / 6, 1.2 * Tp);
+        delay(330);
+        while ( digitalRead(digitalPin[2]) == WHITE && digitalRead(digitalPin[3]) == WHITE )
         {
             MotorWriting(Tp / 2, 1.2 * Tp);
         }
+        MotorWriting(Tp*1.2, Tp);
+        delay(100);
         break;
     }
     ite++;
-    ite--;
+    if(ite == 4) ite = 0;
+    
     // Serial.println(ite);
 }
 

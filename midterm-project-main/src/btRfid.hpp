@@ -32,13 +32,14 @@ void handleMessage()
 {
     if (BTSerial.available())
     {
-        messageFlag = 0;
+        messageFlag = 1;
         received = BTSerial.read();
         Serial.print(received);
     }
     else if (messageFlag)
     {
-        Serial.println();
+        Serial.println("");
+        messageFlag = 0;
     }
 
     if (Serial.available())
@@ -82,7 +83,7 @@ void btSetup()
 {
     Serial.begin(9600);   // Serial Monitor for debugging
     BTSerial.begin(9600); // HC-05 Bluetooth Module
-    Serial.println("BT Ready!");
+    Serial.println(" BT Ready!");
 }
 
 void rfidSetup()
@@ -90,7 +91,7 @@ void rfidSetup()
     SPI.begin();
     mfrc522.PCD_Init(); // Initialize MFRC522
 
-    Serial.println("RFID Ready!");
+    Serial.println(" RFID Ready!");
 }
 
 // void setup() {

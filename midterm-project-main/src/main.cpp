@@ -18,8 +18,9 @@ void setup()
 
 void loop()
 {
-    // handleMessage();
-    // handleCommand();
+    handleMessage();
+    handleCommand();
+
     digitalWrite(PWMA, HIGH);
     digitalWrite(PWMB, HIGH);
 
