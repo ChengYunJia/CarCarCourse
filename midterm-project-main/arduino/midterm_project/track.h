@@ -138,7 +138,7 @@ void tracking(int l2, int l1, int m0, int r1, int r2) {
 }  // tracking
 
 //now taking one cmd at one time
-void Takeinstruct(int cmd,int l2, int l1, int m0, int r1, int r2)
+void Takeinstruct(int cmd, int l2, int l1, int m0, int r1, int r2)
 {
     switch (cmd)
     {
@@ -198,7 +198,7 @@ void Takeinstruct(int cmd,int l2, int l1, int m0, int r1, int r2)
     // Serial.println(ite);
 }
 
-int countWhite()
+int countWhite(int l2, int l1, int m0, int r1, int r2)
 {
     int sum_white = 0;
     for (int i = 0; i < 5; i++)
