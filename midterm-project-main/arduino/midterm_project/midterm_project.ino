@@ -36,13 +36,18 @@
 // RFID, 請按照自己車上的接線寫入腳位
 #define RST_PIN 9                 // 讀卡機的重置腳位
 #define SS_PIN 53                 // 晶片選擇腳位
+// Bluetooth pins
+#define RX 10
+#define TX 11
+
 MFRC522 mfrc522(SS_PIN, RST_PIN);  // 建立MFRC522物件
+SoftwareSerial BTSerial(RX, TX);  // RX, TX (Ensure correct wiring)
 /*===========================define pin & create module object===========================*/
 
 /*============setup============*/
 void setup() {
     // bluetooth initialization
-    Serial1.begin(9600);
+    BTSerial.begin(9600);
     // Serial window
     Serial.begin(9600);
     // RFID initial

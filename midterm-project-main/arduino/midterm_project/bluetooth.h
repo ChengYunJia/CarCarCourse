@@ -9,6 +9,9 @@
 /*if you have no idea how to start*/
 /*check out what you have learned from week 2*/
 
+bool extern messageFlag;
+char extern received;
+
 enum BT_CMD {
     NOTHING,
     // TODO: add your own command type here
@@ -21,6 +24,10 @@ BT_CMD ask_BT() {
 // TODO:
 // 1. get cmd from Serial1(bluetooth serial)
 // 2. link bluetooth message to your own command type
+        messageFlag = 1;
+        received = Serial1.read();
+        Serial.print(received);
+
 #ifdef DEBUG
         Serial.print("cmd : ");
         Serial.println(cmd);
@@ -39,7 +46,7 @@ void send_msg(const char& msg) {
 // send UID back through Serial1(bluetooth serial)
 void send_byte(byte* id, byte& idSize) {
     for (byte i = 0; i < idSize; i++) {  // Send UID consequently.
-        Serial1.write(id[i]);
+        BTSerial.write(id[i]);
     }
 #ifdef DEBUG
     Serial.print("Sent id: ");
