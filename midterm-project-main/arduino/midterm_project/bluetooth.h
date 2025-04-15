@@ -11,6 +11,7 @@
 
 bool extern messageFlag;
 char extern received;
+SoftwareSerial extern BTSerial;
 
 enum BT_CMD {
     NOTHING,
@@ -20,18 +21,23 @@ enum BT_CMD {
 BT_CMD ask_BT() {
     BT_CMD message = NOTHING;
     char cmd;
-    if (Serial1.available()) {
+    if (BTSerial.available()) {
 // TODO:
 // 1. get cmd from Serial1(bluetooth serial)
 // 2. link bluetooth message to your own command type
         messageFlag = 1;
-        received = Serial1.read();
+        received = BTSerial.read();
         Serial.print(received);
 
 #ifdef DEBUG
         Serial.print("cmd : ");
         Serial.println(cmd);
 #endif
+    }
+    else if (messageFlag)
+    {
+        Serial.println("");
+        messageFlag = 0;
     }
     return message;
 }  // ask_BT
@@ -41,6 +47,8 @@ BT_CMD ask_BT() {
 // (but need to convert to byte type)
 void send_msg(const char& msg) {
     // TODO:
+    BTSerial.write(msg);
+
 }  // send_msg
 
 // send UID back through Serial1(bluetooth serial)
