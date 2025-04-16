@@ -50,9 +50,11 @@ void setup() {
     BTSerial.begin(9600);
     // Serial window
     Serial.begin(9600);
+    Serial.println(" BT Ready!");
     // RFID initial
     SPI.begin();
     mfrc522.PCD_Init();
+    Serial.println(" RFID Ready!");
     // TB6612 pin
     pinMode(MotorR_I1, OUTPUT);
     pinMode(MotorR_I2, OUTPUT);
@@ -86,6 +88,7 @@ bool state = false;     // set state to false to halt the car, set state to true
 BT_CMD _cmd = NOTHING;  // enum for bluetooth message, reference in bluetooth.h line 2
 bool messageFlag = 0;
 char received = 'p';
+int cmd;
 /*===========================initialize variables===========================*/
 
 /*===========================declare function prototypes===========================*/
@@ -95,21 +98,80 @@ void SetState();  // switch the state
 
 /*===========================define function===========================*/
 void loop() {
+    digitalWrite(PWMA, HIGH);
+    digitalWrite(PWMB, HIGH);
     if (!state)
         MotorWriting(0, 0);
     else
         Search();
     SetState();
+/*    
+
+
+    if ( countWhite() >= 2)
+        Tracking();
+    else
+    {
+        MotorWriting(0, 0);
+        Takeinstruct();
+    }
+    
+    if( canReadCard() ) handleCard() ;*/
 }
 
 void SetState() {
     // TODO:
     // 1. Get command from bluetooth
     // 2. Change state if need
+    ask_BT();
+    switch (received)
+    {
+    case 'w':
+        cmd = GO;
+        break;
+    case 'a':
+        cmd = LEFT;
+        break;
+    case 's':
+        cmd = UTURN;
+        break;
+    case 'd':
+        cmd = RIGHT;
+        break;
+    case 'p':
+        cmd = STOP;
+        break;
+    default:
+        break;
+    }
+
+    if(cmd == STOP)
+    {
+        state = false;
+    }
+    else
+    {
+        state =  true;
+    }
+
+    l2 = ( digitalRead(IRpin_LL) == WHITE );
+    l1 = ( digitalRead(IRpin_L) == WHITE );
+    m0 = ( digitalRead(IRpin_M) == WHITE );
+    r1 = ( digitalRead(IRpin_R) == WHITE );
+    r2 = ( digitalRead(IRpin_RR) == WHITE );
+
 }
 
 void Search() {
     // TODO: let your car search graph(maze) according to bluetooth command from computer(python
     // code)
+    if ( countWhite(l2, l1, m0, r1, r2) >= 2)
+        Tracking();
+    else
+    {
+        MotorWriting(0, 0);
+        Takeinstruct(cmd, l2, l1, m0, r1, r2);
+    }
+    
 }
 /*===========================define function===========================*/

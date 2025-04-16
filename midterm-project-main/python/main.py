@@ -19,7 +19,7 @@ log = logging.getLogger(__name__)
 # TODO : Fill in the following information
 TEAM_NAME = "thursdayteam3"
 SERVER_URL = "http://140.112.175.18:5000/"
-MAZE_FILE = "data/small_maze.csv"
+MAZE_FILE = "python/data/maze (1).csv"
 BT_PORT = "COM9"
 
 
@@ -35,7 +35,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def main(mode: int, bt_port: str, team_name: str, server_url: str, maze_file: str):
+def main(mode: str, bt_port: str, team_name: str, server_url: str, maze_file: str):
     maze = Maze(maze_file)
     point = ScoreboardServer(team_name, server_url)
     #point = ScoreboardFake("your team name", "data/fakeUID.csv") # for local testing
@@ -49,6 +49,9 @@ def main(mode: int, bt_port: str, team_name: str, server_url: str, maze_file: st
     elif mode == "1":
         log.info("Mode 1: Self-testing mode.")
         # TODO: You can write your code to test specific function.
+        maze.BFS(maze.node_dict[1], maze.node_dict[46])
+        #to execute this
+        #you needto comment def of "point" and "interface"
 
     else:
         log.error("Invalid mode")

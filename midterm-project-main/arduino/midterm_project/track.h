@@ -21,6 +21,7 @@ enum DIRECTION
     UTURN = 2,
     RIGHT = 3,
     LEFT = 4,
+    STOP = 5,
 };
 
 enum COLOR
@@ -193,6 +194,9 @@ void Takeinstruct(int cmd, int l2, int l1, int m0, int r1, int r2)
         MotorWriting(_Tp*1.2, _Tp);
         delay(100);
         break;
+    case STOP:
+        MotorWriting(0, 0);
+        break;
     }
     
     // Serial.println(ite);
@@ -201,10 +205,6 @@ void Takeinstruct(int cmd, int l2, int l1, int m0, int r1, int r2)
 int countWhite(int l2, int l1, int m0, int r1, int r2)
 {
     int sum_white = 0;
-    for (int i = 0; i < 5; i++)
-    {
-        white[i] = ( digitalRead(digitalPin[i]) == WHITE );
-        sum_white += white[i];
-    }
+    sum_white = 5 - (l2 + l1 + m0 + r1 + r2);
     return sum_white;
 }
