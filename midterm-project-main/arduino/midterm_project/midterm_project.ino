@@ -171,6 +171,7 @@ void Search() {
     {
         MotorWriting(0, 0);
         Takeinstruct(cmd, l2, l1, m0, r1, r2);
+        send_msg('N');//on node, ask next cmd
     }
     
 }
