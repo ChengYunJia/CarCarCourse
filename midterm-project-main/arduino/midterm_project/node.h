@@ -12,3 +12,8 @@ int extern _Tp;
 
 // TODO: add some function to control your car when encounter a node
 // here are something you can try: left_turn, right_turn... etc.
+
+bool on_node()
+{
+    //send_msg
+}
