@@ -98,8 +98,8 @@ void SetState();  // switch the state
 
 /*===========================define function===========================*/
 void loop() {
-    digitalWrite(PWMA, HIGH);
-    digitalWrite(PWMB, HIGH);
+    digitalWrite(MotorR_PWMR, HIGH);
+    digitalWrite(MotorL_PWML, HIGH);
     if (!state)
         MotorWriting(0, 0);
     else
@@ -126,19 +126,19 @@ void SetState() {
     ask_BT();
     switch (received)
     {
-    case 'w':
+    case 'f':
         cmd = GO;
         break;
-    case 'a':
+    case 'l':
         cmd = LEFT;
         break;
-    case 's':
+    case 'b':
         cmd = UTURN;
         break;
-    case 'd':
+    case 'r':
         cmd = RIGHT;
         break;
-    case 'p':
+    case 's':
         cmd = STOP;
         break;
     default:
