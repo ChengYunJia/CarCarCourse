@@ -80,16 +80,21 @@ void setup() {
 #include "bluetooth.h"
 #include "node.h"
 #include "track.h"
+#include "enumDirection.h"
 /*=====Import header files=====*/
 
 /*===========================initialize variables===========================*/
 int l2 = 0, l1 = 0, m0 = 0, r1 = 0, r2 = 0;  // 紅外線模組的讀值(0->white,1->black)
-int _Tp = 90;                                // set your own value for motor power
-bool state = false;     // set state to false to halt the car, set state to true to activate the car
+int Tp = 180;                                // set your own value for motor power
+//bool state = false;     // set state to false to halt the car, set state to true to activate the car
 //BT_CMD _cmd = NOTHING;  // enum for bluetooth message, reference in bluetooth.h line 2
-char received = 'p';
-DIRECTION cmd;
+char received = 's';
 bool send_N_cmd = false;
+int instruction[1000];
+int rightBoarder = 0;
+int instructIndex = 0;
+char defaultInstruct[100] = "s";
+bool bt_setup = false;
 /*===========================initialize variables===========================*/
 
 /*===========================declare function prototypes===========================*/
@@ -99,6 +104,14 @@ void SetState();  // switch the state
 
 /*===========================define function===========================*/
 void loop() {
+    if(!bt_setup)
+    {
+        for(int i=0 ; i<100 ; i++){
+            received = defaultInstruct[i];
+            handleReceived();
+        }
+        bt_setup = true;
+    }
     digitalWrite(MotorR_PWMR, HIGH);
     digitalWrite(MotorL_PWML, HIGH);
 
@@ -108,18 +121,15 @@ void loop() {
     r1 = ( digitalRead(IRpin_R) == WHITE );
     r2 = ( digitalRead(IRpin_RR) == WHITE );
 
-    if (!state)
-        MotorWriting(0, 0);
-    else
-        Search();
     SetState();
-
+    Search();
 }
 
 void SetState() {
     // TODO:
     // 1. Get command from bluetooth
     // 2. Change state if need
+    /*
     if( countWhite(l2, l1, m0, r1, r2)<2 and send_N_cmd == false )
     {
         send_msg('N');
@@ -132,52 +142,20 @@ void SetState() {
     {
         send_N_cmd = false;
     }
-
+    */
 
     handleMessage();
-    switch (received)
-    {
-    case 'f':
-        cmd = GO;
-        break;
-    case 'l':
-        cmd = LEFT;
-        break;
-    case 'b':
-        cmd = UTURN;
-        break;
-    case 'r':
-        cmd = RIGHT;
-        break;
-    case 's':
-        cmd = STOP;
-        break;
-    default:
-        cmd = NOTHING;
-        break;
-    }
-    //Serial.println(cmd);
-
-    if(cmd == STOP)
-    {
-        state = false;
-    }
-    else
-    {
-        state =  true;
-    }
-
 }
 
 void Search() {
     // TODO: let your car search graph(maze) according to bluetooth command from computer(python
     // code)
-    if ( countWhite(l2, l1, m0, r1, r2) >= 2)
+    if ( countWhite(l2, l1, m0, r1, r2) == 5)//problem
         tracking(l2, l1, m0, r1, r2);
     else
     {
         MotorWriting(0, 0);
-        Takeinstruct(cmd, l2, l1, m0, r1, r2);
+        Takeinstruct(l2, l1, m0, r1, r2);
         //send_msg('N');//on node, ask next cmd
     }
 

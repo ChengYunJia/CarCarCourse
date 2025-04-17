@@ -7,7 +7,7 @@
 /***************************************************************************/
 
 /*===========================import variable===========================*/
-int extern _Tp;
+int extern Tp;
 /*===========================import variable===========================*/
 
 // TODO: add some function to control your car when encounter a node
