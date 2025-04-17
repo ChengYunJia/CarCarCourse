@@ -87,10 +87,9 @@ int l2 = 0, l1 = 0, m0 = 0, r1 = 0, r2 = 0;  // 紅外線模組的讀值(0->whit
 int _Tp = 90;                                // set your own value for motor power
 bool state = false;     // set state to false to halt the car, set state to true to activate the car
 //BT_CMD _cmd = NOTHING;  // enum for bluetooth message, reference in bluetooth.h line 2
-bool messageFlag = 0;
 char received = 'p';
 DIRECTION cmd;
-bool received_next_cmd = false;
+bool send_N_cmd = false;
 /*===========================initialize variables===========================*/
 
 /*===========================declare function prototypes===========================*/
@@ -114,38 +113,28 @@ void loop() {
     else
         Search();
     SetState();
-/*    
 
-
-    if ( countWhite() >= 2)
-        Tracking();
-    else
-    {
-        MotorWriting(0, 0);
-        Takeinstruct();
-    }
-    
-    if( canReadCard() ) handleCard() ;*/
 }
 
 void SetState() {
     // TODO:
     // 1. Get command from bluetooth
     // 2. Change state if need
-    if( countWhite(l2, l1, m0, r1, r2)<2 and received_next_cmd == false )
+    if( countWhite(l2, l1, m0, r1, r2)<2 and send_N_cmd == false )
     {
         send_msg('N');
+        send_msg('\n');
         Serial.print('N');
-        delay(500);
-        received_next_cmd = true;
+        delay(50);
+        send_N_cmd = true;
     }
-    else if( countWhite(l2, l1, m0, r1, r2)>=2 and received_next_cmd == true )
+    else if( countWhite(l2, l1, m0, r1, r2)>=2 and send_N_cmd == true )
     {
-        received_next_cmd = false;
+        send_N_cmd = false;
     }
 
 
-    ask_BT();
+    handleMessage();
     switch (received)
     {
     case 'f':
@@ -167,8 +156,9 @@ void SetState() {
         cmd = NOTHING;
         break;
     }
-    Serial.print(received);
-    if(cmd == STOP or cmd == NOTHING)
+    //Serial.println(cmd);
+
+    if(cmd == STOP)
     {
         state = false;
     }

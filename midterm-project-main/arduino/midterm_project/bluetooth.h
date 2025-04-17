@@ -9,40 +9,20 @@
 /*if you have no idea how to start*/
 /*check out what you have learned from week 2*/
 
-bool extern messageFlag;
 char extern received;
 SoftwareSerial extern BTSerial;
 
-enum BT_CMD {
-    
-    // TODO: add your own command type here
-};
 
-bool ask_BT() {
-    //BT_CMD message = NOTHING;
-    bool success = false;
-    char cmd;
-    if (BTSerial.available()) {
-// TODO:
-// 1. get cmd from Serial1(bluetooth serial)
-// 2. link bluetooth message to your own command type
-        messageFlag = 1;
-        received = BTSerial.read();
-        success = true;
-        Serial.print(received);
-
-#ifdef DEBUG
-        Serial.print("cmd : ");
-        Serial.println(cmd);
-#endif
-    }
-    else if (messageFlag)
+void handleMessage()
+{
+    if (BTSerial.available())
     {
-        Serial.println("");
-        messageFlag = 0;
+        received = BTSerial.read();
+        Serial.print(received);
     }
-    return success;
-}  // ask_BT
+
+    return;
+}
 
 // send msg back through Serial1(bluetooth serial)
 // can use send_byte alternatively to send msg back

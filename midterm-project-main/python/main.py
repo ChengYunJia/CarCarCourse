@@ -46,6 +46,9 @@ def main(mode: str, bt_port: str, team_name: str, server_url: str, maze_file: st
         log.info("Mode 0: For treasure-hunting")
         # TODO : for treasure-hunting, which encourages you to hunt as many scores as possible
 
+        #bt start
+        #bt end process
+
     elif mode == "1":
         log.info("Mode 1: Self-testing mode.")
         # TODO: You can write your code to test specific function.
@@ -55,16 +58,26 @@ def main(mode: str, bt_port: str, team_name: str, server_url: str, maze_file: st
         #to execute this
         #you needto comment def of "point" and "interface"
         '''
-        cmd = ['f', 'r', 'f', 'f', 'l', 's']
+
+        '''
+        cmd = ["f", "r", "b", "f", "b", "f", "s"]
         idx = 0
         
         while(True):
             print(interface.bt.serial_read_string())
-            print('1\n')
-            if(interface.bt.serial_read_string() == "N"):
+            print("k\n")
+            if(interface.bt.serial_read_string() == 'N'):
                 interface.send_action(cmd[idx])
+                print("cmd:")
                 print(cmd[idx])
+                print("idx:")
+                print(idx)
                 idx += 1
+        '''
+        
+        while(True):
+            cmd = input()
+            interface.send_action(cmd)
 
     else:
         log.error("Invalid mode")
