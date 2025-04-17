@@ -89,6 +89,7 @@ BT_CMD _cmd = NOTHING;  // enum for bluetooth message, reference in bluetooth.h 
 bool messageFlag = 0;
 char received = 'p';
 int cmd;
+bool received_next_cmd = false;
 /*===========================initialize variables===========================*/
 
 /*===========================declare function prototypes===========================*/
@@ -100,6 +101,13 @@ void SetState();  // switch the state
 void loop() {
     digitalWrite(MotorR_PWMR, HIGH);
     digitalWrite(MotorL_PWML, HIGH);
+
+    l2 = ( digitalRead(IRpin_LL) == WHITE );
+    l1 = ( digitalRead(IRpin_L) == WHITE );
+    m0 = ( digitalRead(IRpin_M) == WHITE );
+    r1 = ( digitalRead(IRpin_R) == WHITE );
+    r2 = ( digitalRead(IRpin_RR) == WHITE );
+
     if (!state)
         MotorWriting(0, 0);
     else
@@ -123,7 +131,16 @@ void SetState() {
     // TODO:
     // 1. Get command from bluetooth
     // 2. Change state if need
-    ask_BT();
+    if( countWhite(l2, l1, m0, r1, r2)<2 and received_next_cmd == false )
+    {
+        ask_BT();
+        received_next_cmd = true;
+    }
+    else if( countWhite(l2, l1, m0, r1, r2)>=2 and received_next_cmd == true )
+    {
+        received_next_cmd = false;
+    }
+    
     switch (received)
     {
     case 'f':
@@ -154,11 +171,7 @@ void SetState() {
         state =  true;
     }
 
-    l2 = ( digitalRead(IRpin_LL) == WHITE );
-    l1 = ( digitalRead(IRpin_L) == WHITE );
-    m0 = ( digitalRead(IRpin_M) == WHITE );
-    r1 = ( digitalRead(IRpin_R) == WHITE );
-    r2 = ( digitalRead(IRpin_RR) == WHITE );
+
 
 }
 
@@ -171,8 +184,9 @@ void Search() {
     {
         MotorWriting(0, 0);
         Takeinstruct(cmd, l2, l1, m0, r1, r2);
-        send_msg('N');//on node, ask next cmd
+        //send_msg('N');//on node, ask next cmd
     }
-    
+
+    //if( canReadCard() ) handleCard() ;
 }
 /*===========================define function===========================*/
