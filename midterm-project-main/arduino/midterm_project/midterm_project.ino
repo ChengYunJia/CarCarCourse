@@ -10,6 +10,7 @@
 
 // for RFID
 #include <MFRC522.h>
+#include <SoftwareSerial.h>
 #include <SPI.h>
 
 /*===========================define pin & create module object================================*/
@@ -85,10 +86,10 @@ void setup() {
 int l2 = 0, l1 = 0, m0 = 0, r1 = 0, r2 = 0;  // 紅外線模組的讀值(0->white,1->black)
 int _Tp = 90;                                // set your own value for motor power
 bool state = false;     // set state to false to halt the car, set state to true to activate the car
-BT_CMD _cmd = NOTHING;  // enum for bluetooth message, reference in bluetooth.h line 2
+//BT_CMD _cmd = NOTHING;  // enum for bluetooth message, reference in bluetooth.h line 2
 bool messageFlag = 0;
 char received = 'p';
-int cmd;
+DIRECTION cmd;
 bool received_next_cmd = false;
 /*===========================initialize variables===========================*/
 
@@ -133,14 +134,18 @@ void SetState() {
     // 2. Change state if need
     if( countWhite(l2, l1, m0, r1, r2)<2 and received_next_cmd == false )
     {
-        ask_BT();
+        send_msg('N');
+        Serial.print('N');
+        delay(500);
         received_next_cmd = true;
     }
     else if( countWhite(l2, l1, m0, r1, r2)>=2 and received_next_cmd == true )
     {
         received_next_cmd = false;
     }
-    
+
+
+    ask_BT();
     switch (received)
     {
     case 'f':
@@ -159,10 +164,11 @@ void SetState() {
         cmd = STOP;
         break;
     default:
+        cmd = NOTHING;
         break;
     }
-
-    if(cmd == STOP)
+    Serial.print(received);
+    if(cmd == STOP or cmd == NOTHING)
     {
         state = false;
     }
@@ -171,15 +177,13 @@ void SetState() {
         state =  true;
     }
 
-
-
 }
 
 void Search() {
     // TODO: let your car search graph(maze) according to bluetooth command from computer(python
     // code)
     if ( countWhite(l2, l1, m0, r1, r2) >= 2)
-        Tracking();
+        tracking(l2, l1, m0, r1, r2);
     else
     {
         MotorWriting(0, 0);

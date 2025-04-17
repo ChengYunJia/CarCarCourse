@@ -14,12 +14,13 @@ char extern received;
 SoftwareSerial extern BTSerial;
 
 enum BT_CMD {
-    NOTHING,
+    
     // TODO: add your own command type here
 };
 
-BT_CMD ask_BT() {
-    BT_CMD message = NOTHING;
+bool ask_BT() {
+    //BT_CMD message = NOTHING;
+    bool success = false;
     char cmd;
     if (BTSerial.available()) {
 // TODO:
@@ -27,6 +28,7 @@ BT_CMD ask_BT() {
 // 2. link bluetooth message to your own command type
         messageFlag = 1;
         received = BTSerial.read();
+        success = true;
         Serial.print(received);
 
 #ifdef DEBUG
@@ -39,7 +41,7 @@ BT_CMD ask_BT() {
         Serial.println("");
         messageFlag = 0;
     }
-    return message;
+    return success;
 }  // ask_BT
 
 // send msg back through Serial1(bluetooth serial)
