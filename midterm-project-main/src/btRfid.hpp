@@ -10,7 +10,24 @@ MFRC522 mfrc522(SS_PIN, RST_PIN); // Create MFRC522 instance
 SoftwareSerial BTSerial(RX, TX);  // RX, TX (Ensure correct wiring)
 
 bool messageFlag = 0;
-char received = 'p';
+char received = 's';
+
+// f l r b s
+enum DIRECTION
+{
+    GO = 1,
+    UTURN = 2,
+    RIGHT = 3,
+    LEFT = 4,
+    STOP = 5,
+};
+
+int instruction[1000];
+int rightBoarder = 0;
+int instructIndex = 0;
+int command = STOP;
+char defaultInstruct[100] = "s";
+
 
 bool canReadCard()
 {
@@ -28,6 +45,42 @@ bool canReadCard()
     return 1;
 }
 
+void handleReceived(){
+    switch (received)
+    {
+        case 'f':
+        /* code */
+        command = GO;
+        break;
+
+        case 'l':
+        /* code */
+        command = LEFT;
+        break;
+
+        case 'r':
+        /* code */
+        command = RIGHT;
+        break;
+
+        case 'b':
+        /* code */
+        command = UTURN;
+        break;
+
+        case 's':
+        command = STOP;
+        /* code */
+        break;
+
+        default:
+            return;
+        break;
+    }
+    instruction[ rightBoarder ] = command;
+    rightBoarder++;
+}
+
 void handleMessage()
 {
     if (BTSerial.available())
@@ -35,6 +88,8 @@ void handleMessage()
         messageFlag = 1;
         received = BTSerial.read();
         Serial.print(received);
+        handleReceived();
+
     }
     else if (messageFlag)
     {
@@ -84,6 +139,10 @@ void btSetup()
     Serial.begin(9600);   // Serial Monitor for debugging
     BTSerial.begin(9600); // HC-05 Bluetooth Module
     Serial.println(" BT Ready!");
+    for(int i=0 ; i<100 ; i++){
+        received = defaultInstruct[i];
+        handleReceived();
+    }
 }
 
 void rfidSetup()

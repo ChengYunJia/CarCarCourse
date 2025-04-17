@@ -13,7 +13,8 @@ void setup()
     tcrtSetup();
     btSetup();
     rfidSetup();
-    delay(3000);
+    // delay(20000);
+    // while(1){ if( BTSerial.available() ) break; } // start when connected to bt
 }
 
 void loop()
@@ -32,7 +33,7 @@ void loop()
         Takeinstruct();
     }
     
-    if( canReadCard() ) handleCard() ;
+    if( canReadCard() ) handleCard();
 }
 
 /*

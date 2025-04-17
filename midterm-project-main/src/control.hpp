@@ -2,9 +2,17 @@
 #include "pins.hpp"
 #include "btRfid.hpp"
 
-int instruction[] = {1, 3, 1, 4, 2}; // 1 = straight, 2 = uturn, 3 = turn right, 4 = turn left
+enum COLOR
+{
+    WHITE = 0,
+    BLACK = 1,
+};
 
-int ite = 0;
+// int instruction[] = {GO, RIGHT, GO, LEFT, UTURN, GO, LEFT, GO, UTURN, GO, RIGHT, RIGHT, GO, GO, RIGHT, UTURN, GO, UTURN, RIGHT, GO, RIGHT, RIGHT, UTURN}; // 1 = straight, 2 = uturn, 3 = turn right, 4 = turn left
+
+// int instruction[] = {GO, LEFT, RIGHT, RIGHT, UTURN, GO, LEFT, GO, UTURN, GO, RIGHT, RIGHT, GO, GO, RIGHT, UTURN, GO, UTURN, RIGHT, GO, RIGHT, RIGHT, UTURN}; // 1 = straight, 2 = uturn, 3 = turn right, 4 = turn left
+// int instruction[] = {GO, GO, LEFT, GO, UTURN, GO, RIGHT, RIGHT, LEFT, RIGHT, UTURN, LEFT, LEFT, GO, LEFT, UTURN, GO, STOP}; // 1 = straight, 2 = uturn, 3 = turn right, 4 = turn left
+
 int white[5] = {0, 0, 0, 0, 0};
 int sum_white = 0;
 int weight[5] = {5, 2, 0, -2, -5};
@@ -15,20 +23,6 @@ const int Tp = 180; // speed
 double error;
 double last_error = 0;
 unsigned long prevTime = 0;
-
-enum DIRECTION
-{
-    GO = 1,
-    UTURN = 2,
-    RIGHT = 3,
-    LEFT = 4,
-};
-
-enum COLOR
-{
-    WHITE = 0,
-    BLACK = 1,
-};
 
 void tcrtSetup(){
     for (int i = 0; i < 5; i++)
@@ -141,105 +135,120 @@ void Tracking()
     // Serial.println(vR);
 }
 
+void carGO(){
+    if( digitalRead(digitalPin[0]) == WHITE ){
+        MotorWriting( Tp, Tp * 0.1 );
+        delay(30);
+    }else if( digitalRead(digitalPin[4]) == WHITE ){
+        MotorWriting( Tp * 0.1, Tp );
+        delay(30);
+    }
+
+
+    MotorWriting(Tp, Tp);
+    delay(100);
+    while ( digitalRead(digitalPin[1]) == BLACK && digitalRead(digitalPin[2]) == BLACK && digitalRead(digitalPin[3]) == BLACK )
+    {
+        if( digitalRead(digitalPin[0]) == WHITE ){
+            MotorWriting(Tp, Tp*0.95);
+            delay(100);
+        }
+        if( digitalRead(digitalPin[4]) == WHITE ){
+            MotorWriting(Tp*0.95, Tp);
+            delay(100);
+        }
+    }
+    return;
+}
+void carUTURN(){
+    if( digitalRead(digitalPin[0]) == WHITE ){
+        MotorWriting( Tp, Tp * 0.1 );
+        delay(30);
+    }else if( digitalRead(digitalPin[4]) == WHITE ){
+        MotorWriting( Tp * 0.1, Tp );
+        delay(30);
+    }
+
+
+    if( digitalRead(digitalPin[0]) == WHITE ){
+        MotorWriting(-Tp * 1.3, Tp * 0.6);
+        delay(50);
+    }
+    MotorWriting(-Tp * 1.2, Tp);
+    delay(300);
+    MotorWriting(-Tp * 0.8, Tp*0.4);
+    delay(200);
+    while ( digitalRead(digitalPin[0]) == WHITE && digitalRead(digitalPin[1]) == WHITE )
+    {
+        MotorWriting(-Tp*0.5, Tp*0.4);
+    }
+    MotorWriting(Tp*1.3, Tp*0.6);
+    delay(150);
+}
+void carRIGHT(){
+    if( digitalRead(digitalPin[0]) == WHITE ){
+        MotorWriting( Tp, Tp * 0.1 );
+        delay(30);
+    }else if( digitalRead(digitalPin[4]) == WHITE ){
+        MotorWriting( Tp * 0.1, Tp );
+        delay(30);
+    }
+
+
+    MotorWriting(1.2 * Tp, Tp / 6);
+    delay(330);
+    while ( digitalRead(digitalPin[1]) == WHITE && digitalRead(digitalPin[2]) == WHITE )
+    {
+        MotorWriting(1.2 * Tp, Tp / 2);
+    }
+    MotorWriting(Tp, Tp*1.2);
+    delay(100);
+}
+void carLEFT(){
+    if( digitalRead(digitalPin[0]) == WHITE ){
+        MotorWriting( Tp, Tp * 0.1 );
+        delay(30);
+    }else if( digitalRead(digitalPin[4]) == WHITE ){
+        MotorWriting( Tp * 0.1, Tp );
+        delay(30);
+    }
+
+
+    MotorWriting(Tp / 6, 1.2 * Tp);
+    delay(330);
+    while ( digitalRead(digitalPin[2]) == WHITE && digitalRead(digitalPin[3]) == WHITE )
+    {
+        MotorWriting(Tp / 2, 1.2 * Tp);
+    }
+    MotorWriting(Tp*1.2, Tp);
+    delay(100);
+}
+
 void Takeinstruct()
 {
-    switch (instruction[ite])
+    if( instructIndex >= rightBoarder ){
+        return;
+    }
+    switch (instruction[ instructIndex ])
     {
     case GO:
-
-        if( digitalRead(digitalPin[0]) == WHITE ){
-            MotorWriting( Tp, Tp * 0.1 );
-            delay(30);
-        }else if( digitalRead(digitalPin[4]) == WHITE ){
-            MotorWriting( Tp * 0.1, Tp );
-            delay(30);
-        }
-
-
-        MotorWriting(Tp, Tp);
-        delay(100);
-        while ( digitalRead(digitalPin[1]) == BLACK && digitalRead(digitalPin[2]) == BLACK && digitalRead(digitalPin[3]) == BLACK )
-        {
-            if( digitalRead(digitalPin[0]) == WHITE ){
-                MotorWriting(Tp, Tp*0.95);
-                delay(100);
-            }
-            if( digitalRead(digitalPin[4]) == WHITE ){
-                MotorWriting(Tp*0.95, Tp);
-                delay(100);
-            }
-        }
+        carGO();
         break;
     case UTURN: // check
-
-        if( digitalRead(digitalPin[0]) == WHITE ){
-            MotorWriting( Tp, Tp * 0.1 );
-            delay(30);
-        }else if( digitalRead(digitalPin[4]) == WHITE ){
-            MotorWriting( Tp * 0.1, Tp );
-            delay(30);
-        }
-
-
-        if( digitalRead(digitalPin[0]) == WHITE ){
-            MotorWriting(-Tp * 1.3, Tp * 0.6);
-            delay(50);
-        }
-        MotorWriting(-Tp * 1.2, Tp);
-        delay(300);
-        MotorWriting(-Tp * 0.8, Tp*0.4);
-        delay(200);
-        while ( digitalRead(digitalPin[0]) == WHITE && digitalRead(digitalPin[1]) == WHITE )
-        {
-            MotorWriting(-Tp*0.5, Tp*0.4);
-        }
-        MotorWriting(Tp*1.3, Tp*0.6);
-        delay(150);
+        carUTURN();
         break;
     case RIGHT:
-
-        if( digitalRead(digitalPin[0]) == WHITE ){
-            MotorWriting( Tp, Tp * 0.1 );
-            delay(30);
-        }else if( digitalRead(digitalPin[4]) == WHITE ){
-            MotorWriting( Tp * 0.1, Tp );
-            delay(30);
-        }
-
-
-        MotorWriting(1.2 * Tp, Tp / 6);
-        delay(330);
-        while ( digitalRead(digitalPin[1]) == WHITE && digitalRead(digitalPin[2]) == WHITE )
-        {
-            MotorWriting(1.2 * Tp, Tp / 2);
-        }
-        MotorWriting(Tp, Tp*1.2);
-        delay(100);
+        carRIGHT();
         break;
     case LEFT:
-
-        if( digitalRead(digitalPin[0]) == WHITE ){
-            MotorWriting( Tp, Tp * 0.1 );
-            delay(30);
-        }else if( digitalRead(digitalPin[4]) == WHITE ){
-            MotorWriting( Tp * 0.1, Tp );
-            delay(30);
-        }
-
-
-        MotorWriting(Tp / 6, 1.2 * Tp);
-        delay(330);
-        while ( digitalRead(digitalPin[2]) == WHITE && digitalRead(digitalPin[3]) == WHITE )
-        {
-            MotorWriting(Tp / 2, 1.2 * Tp);
-        }
-        MotorWriting(Tp*1.2, Tp);
-        delay(100);
+        carLEFT();
         break;
+
+    case STOP:
+        MotorWriting(0, 0);
+        // delay(10000);
     }
-    ite++;
-    if(ite == 5) ite = 1;
-    
+    instructIndex++;
     // Serial.println(ite);
 }
 
