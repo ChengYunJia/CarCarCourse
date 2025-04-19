@@ -28,7 +28,7 @@ int rightBoarder = 0;
 int instructIndex = 0;
 int command = STOP;
 // char defaultInstruct[500] = "fflfbfrrlr2llfr2fs";
-char defaultInstruct[500] = "fllfr2fbrffr2flfs";
+char defaultInstruct[500] = "fllfr2fbrffr2flfbfrf2llr2llflbfs";
 // char defaultInstruct[500] = "f222222222222";
 
 

@@ -20,7 +20,7 @@ int weight[5] = {5, 2, 0, -2, -5};
 const int Kp = 25;
 const int Kd = 15;
 const int Tp = 180; // speed
-const double gasgasgas = 1.15;
+const double gasgasgas = 1.05;
 double error;
 double last_error = 0;
 unsigned long prevTime = 0;
