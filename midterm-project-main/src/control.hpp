@@ -9,7 +9,7 @@ enum COLOR
 };
 
 // int instruction[] = {GO, RIGHT, GO, LEFT, UTURN, GO, LEFT, GO, UTURN, GO, RIGHT, RIGHT, GO, GO, RIGHT, UTURN, GO, UTURN, RIGHT, GO, RIGHT, RIGHT, UTURN}; // 1 = straight, 2 = uturn, 3 = turn right, 4 = turn left
-
+// fflfbfrrlrbllflbfs
 // int instruction[] = {GO, LEFT, RIGHT, RIGHT, UTURN, GO, LEFT, GO, UTURN, GO, RIGHT, RIGHT, GO, GO, RIGHT, UTURN, GO, UTURN, RIGHT, GO, RIGHT, RIGHT, UTURN}; // 1 = straight, 2 = uturn, 3 = turn right, 4 = turn left
 // int instruction[] = {GO, GO, LEFT, GO, UTURN, GO, RIGHT, RIGHT, LEFT, RIGHT, UTURN, LEFT, LEFT, GO, LEFT, UTURN, GO, STOP}; // 1 = straight, 2 = uturn, 3 = turn right, 4 = turn left
 
@@ -20,6 +20,7 @@ int weight[5] = {5, 2, 0, -2, -5};
 const int Kp = 25;
 const int Kd = 15;
 const int Tp = 180; // speed
+const double gasgasgas = 1.15;
 double error;
 double last_error = 0;
 unsigned long prevTime = 0;
@@ -84,29 +85,29 @@ void MotorWriting(double vL, double vR)
     analogWrite(PWMA, vR);
 }
 
-void handleCommand(){
-    switch (received)
-    {
-    case 'w':
-        MotorWriting(Tp, Tp);
-        break;
-    case 'a':
-        MotorWriting(0, Tp);
-        break;
-    case 's':
-        MotorWriting(-Tp, -Tp);
-        break;
-    case 'd':
-        MotorWriting(Tp, 0);
-        break;
-    case 'p':
-        MotorWriting(0, 0);
-        break;
+// void handleCommand(){
+//     switch (received)
+//     {
+//     case 'w':
+//         MotorWriting(Tp, Tp);
+//         break;
+//     case 'a':
+//         MotorWriting(0, Tp);
+//         break;
+//     case 's':
+//         MotorWriting(-Tp, -Tp);
+//         break;
+//     case 'd':
+//         MotorWriting(Tp, 0);
+//         break;
+//     case 'p':
+//         MotorWriting(0, 0);
+//         break;
 
-    default:
-        break;
-    }
-}
+//     default:
+//         break;
+//     }
+// }
 
 void Tracking()
 {
@@ -129,7 +130,7 @@ void Tracking()
     int vR = Tp - powerCorrection;
     int vL = Tp + powerCorrection;
 
-    MotorWriting(vL, vR); // Feedback to motors
+    MotorWriting(vL*gasgasgas, vR*gasgasgas); // Feedback to motors
 
     // Serial.println(vL);
     // Serial.println(vR);
@@ -138,23 +139,25 @@ void Tracking()
 void carGO(){
     if( digitalRead(digitalPin[0]) == WHITE ){
         MotorWriting( Tp, Tp * 0.1 );
-        delay(30);
+        delay(50);
     }else if( digitalRead(digitalPin[4]) == WHITE ){
         MotorWriting( Tp * 0.1, Tp );
-        delay(30);
+        delay(50);
     }
 
 
-    MotorWriting(Tp, Tp);
-    delay(100);
+    MotorWriting(Tp*gasgasgas, Tp*gasgasgas);
+    delay(200);
     while ( digitalRead(digitalPin[1]) == BLACK && digitalRead(digitalPin[2]) == BLACK && digitalRead(digitalPin[3]) == BLACK )
     {
         if( digitalRead(digitalPin[0]) == WHITE ){
-            MotorWriting(Tp, Tp*0.95);
+            MotorWriting(Tp*gasgasgas, Tp*gasgasgas*0.95);
             delay(100);
         }
-        if( digitalRead(digitalPin[4]) == WHITE ){
-            MotorWriting(Tp*0.95, Tp);
+        else if( digitalRead(digitalPin[4]) == WHITE ){
+            MotorWriting(Tp*gasgasgas*0.95, Tp*gasgasgas);
+            delay(100);
+        }else{
             delay(100);
         }
     }
@@ -185,13 +188,38 @@ void carUTURN(){
     MotorWriting(Tp*1.3, Tp*0.6);
     delay(150);
 }
+void carUTURNR(){
+    if( digitalRead(digitalPin[4]) == WHITE ){
+        MotorWriting( Tp * 0.1, Tp );
+        delay(30);
+    }else if( digitalRead(digitalPin[0]) == WHITE ){
+        MotorWriting( Tp, Tp*0.1 );
+        delay(30);
+    }
+
+
+    if( digitalRead(digitalPin[4]) == WHITE ){
+        MotorWriting(Tp * 0.6, -Tp * 1.3);
+        delay(50);
+    }
+    MotorWriting(Tp, -Tp * 1.2);
+    delay(300);
+    MotorWriting(Tp*0.4, -Tp * 0.8);
+    delay(200);
+    while ( digitalRead(digitalPin[4]) == WHITE && digitalRead(digitalPin[3]) == WHITE )
+    {
+        MotorWriting(Tp*0.4, -Tp*0.5);
+    }
+    MotorWriting(Tp*0.6, Tp*1.3);
+    delay(150);
+}
 void carRIGHT(){
     if( digitalRead(digitalPin[0]) == WHITE ){
         MotorWriting( Tp, Tp * 0.1 );
-        delay(30);
+        delay(50);
     }else if( digitalRead(digitalPin[4]) == WHITE ){
         MotorWriting( Tp * 0.1, Tp );
-        delay(30);
+        delay(50);
     }
 
 
@@ -207,10 +235,10 @@ void carRIGHT(){
 void carLEFT(){
     if( digitalRead(digitalPin[0]) == WHITE ){
         MotorWriting( Tp, Tp * 0.1 );
-        delay(30);
+        delay(50);
     }else if( digitalRead(digitalPin[4]) == WHITE ){
         MotorWriting( Tp * 0.1, Tp );
-        delay(30);
+        delay(50);
     }
 
 
@@ -247,6 +275,15 @@ void Takeinstruct()
     case STOP:
         MotorWriting(0, 0);
         // delay(10000);
+        break;
+
+    case UTURNR: // check
+        carUTURNR();
+        break;
+
+    default:
+        MotorWriting(0, 0);
+        break;
     }
     instructIndex++;
     // Serial.println(ite);

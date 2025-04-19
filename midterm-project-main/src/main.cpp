@@ -14,22 +14,29 @@ void setup()
     btSetup();
     rfidSetup();
     // delay(20000);
-    // while(1){ if( BTSerial.available() ) break; } // start when connected to bt
+    // BTSerial.println("z");
+    while(rightBoarder<=1){
+        handleMessage();
+    } // start when connected to bt
 }
 
 void loop()
 {
     handleMessage();
-    handleCommand();
+    // handleCommand();
 
     digitalWrite(PWMA, HIGH);
     digitalWrite(PWMB, HIGH);
 
-    if ( countWhite() >= 2)
+    if ( countWhite() >= 2 && instructIndex != rightBoarder)
         Tracking();
     else
     {
         MotorWriting(0, 0);
+        // BTSerial.write("msg\n");
+        // BTSerial.write("z\n");
+        BTSerial.println("msg");
+        BTSerial.println("z");
         Takeinstruct();
     }
     

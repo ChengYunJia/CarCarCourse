@@ -20,13 +20,16 @@ enum DIRECTION
     RIGHT = 3,
     LEFT = 4,
     STOP = 5,
+    UTURNR = 6,
 };
 
 int instruction[1000];
 int rightBoarder = 0;
 int instructIndex = 0;
 int command = STOP;
-char defaultInstruct[100] = "s";
+// char defaultInstruct[500] = "fflfbfrrlr2llfr2fs";
+char defaultInstruct[500] = "fllfr2fbrffr2flfs";
+// char defaultInstruct[500] = "f222222222222";
 
 
 bool canReadCard()
@@ -73,6 +76,11 @@ void handleReceived(){
         /* code */
         break;
 
+        case '2':
+        command = UTURNR;
+        /* code */
+        break;
+
         default:
             return;
         break;
@@ -108,19 +116,20 @@ void handleMessage()
 void handleCard()
 {
     // Read UID and send it via Bluetooth
-    Serial.print("Card UID: ");
-    BTSerial.print("Card UID: ");
+    // Serial.print("UID");
+    BTSerial.println("UID");
+    // BTSerial.write("UID");
 
     for (byte i = 0; i < mfrc522.uid.size; i++)
     {
         Serial.print(mfrc522.uid.uidByte[i], HEX);
         BTSerial.print(mfrc522.uid.uidByte[i], HEX);
 
-        if (i < mfrc522.uid.size - 1)
-        {
-            Serial.print(":");
-            BTSerial.print(":");
-        }
+        // if (i < mfrc522.uid.size - 1)
+        // {
+        //     Serial.print(":");
+        //     BTSerial.print(":");
+        // }
     }
 
     Serial.println();
