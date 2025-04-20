@@ -16,8 +16,9 @@ class Node:
     def __init__(self, index: int = 0):
         self.index = index
         self.prev = -2
+        used = False
         # store successor as (Node, direction to node, distance)
-        self.successors = []    
+        self.successors = []
 
     def get_index(self):
         return self.index
@@ -43,6 +44,6 @@ class Node:
 
     def is_successor(self, node):
         for succ in self.successors:
-            if succ[0] == node:
+            if succ[0] == node.index:
                 return True
         return False

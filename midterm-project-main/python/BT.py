@@ -47,10 +47,10 @@ class Bluetooth:
         return ""
 
     def serial_read_byte(self):
-        sleep(0.05)
         waiting = self.serial.in_waiting
         rv = self.serial.read(waiting)
         if rv:
+            sleep(0.05)
             uid = hex(int.from_bytes(rv, byteorder="big", signed=False))
             self.serial.reset_input_buffer()
             return uid

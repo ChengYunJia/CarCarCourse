@@ -158,7 +158,7 @@ if __name__ == "__main__":
 
     try:
         #scoreboard = ScoreboardServer("TeamName2", "http://140.112.175.18:5000")
-        scoreboard = ScoreboardFake("TeamName", "python/data/fakeUID.csv")
+        scoreboard = ScoreboardFake("TeamName", "data/fakeUID.csv")
         time.sleep(1)
 
         score, time_remaining = scoreboard.add_UID("10BA617E")

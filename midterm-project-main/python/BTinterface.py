@@ -32,8 +32,8 @@ class BTInterface:
         # TODO : send the action to car
         while not self.bt.serial.is_open:
             pass
-        print("BT Connected!")
-
+        #print("BT Connected!")
+        
         msgWrite = dirc
         return self.bt.serial_write_string(msgWrite)
 
