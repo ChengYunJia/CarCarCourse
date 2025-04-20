@@ -69,6 +69,8 @@ def main(mode: str, bt_port: str, team_name: str, server_url: str, maze_file: st
                 print(GetUID)
                 if(GetUID):
                     point.add_UID(GetUID)
+                    #current_score = point.get_current_score()
+                    #log.info(f"Current score: {current_score}")
 
 
     elif mode == "1":
