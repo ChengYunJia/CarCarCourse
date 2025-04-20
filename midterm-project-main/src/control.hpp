@@ -112,7 +112,7 @@ void MotorWriting(double vL, double vR)
 void Tracking()
 {
     if( instruction[instructIndex+1] != GO ){
-        gasgasgas = 1;
+        gasgasgas = 0.95;
     }else{
         gasgasgas = 1.1;
     }
@@ -154,10 +154,10 @@ void Tracking()
 void carGO(){
     if( digitalRead(digitalPin[0]) == WHITE ){
         MotorWriting( Tp, Tp * 0.1 );
-        delay(63);
+        delay(50);
     }else if( digitalRead(digitalPin[4]) == WHITE ){
         MotorWriting( Tp * 0.1, Tp );
-        delay(63);
+        delay(50);
     }
 
 
@@ -200,7 +200,7 @@ void carUTURN(){
     {
         MotorWriting(-Tp*0.5, Tp*0.4);
     }
-    MotorWriting(Tp*1.35, Tp*0.6);
+    MotorWriting(Tp*1.39, Tp*0.6);
     delay(150);
 }
 void carUTURNR(){
@@ -269,7 +269,7 @@ void carLEFT(){
         MotorWriting(Tp / 1.9, 1.2 * Tp);
     }
     MotorWriting(Tp*1.30, Tp*0.97);
-    delay(100);
+    delay(119);
 }
 
 void Takeinstruct()
