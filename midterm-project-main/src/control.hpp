@@ -20,7 +20,7 @@ double weight[5] = {5.2, 2.3, 0, -2.3, -5.2};
 const int Kp = 25;
 const int Kd = 15;
 const int Tp = 180; // speed
-double gasgasgas = 1.05;
+double gasgasgas = 1.1;
 double error;
 double last_error = 0;
 unsigned long prevTime = 0;
@@ -145,7 +145,7 @@ void Tracking()
     int vR = Tp - powerCorrection;
     int vL = Tp + powerCorrection;
 
-    MotorWriting(vL*gasgasgas * 1.05, vR*gasgasgas); // Feedback to motors
+    MotorWriting(vL*gasgasgas, vR*gasgasgas); // Feedback to motors
 
     // Serial.println(vL);
     // Serial.println(vR);
@@ -154,7 +154,7 @@ void Tracking()
 void carGO(){
     if( digitalRead(digitalPin[0]) == WHITE ){
         MotorWriting( Tp, Tp * 0.1 );
-        delay(50);
+        delay(60);
     }else if( digitalRead(digitalPin[4]) == WHITE ){
         MotorWriting( Tp * 0.1, Tp );
         delay(50);
@@ -166,11 +166,11 @@ void carGO(){
     while ( digitalRead(digitalPin[1]) == BLACK && digitalRead(digitalPin[2]) == BLACK && digitalRead(digitalPin[3]) == BLACK )
     {
         if( digitalRead(digitalPin[0]) == WHITE ){
-            MotorWriting(Tp*gasgasgas * 1.05, Tp*gasgasgas*0.95);
+            MotorWriting(Tp*gasgasgas * 1.05, Tp*gasgasgas*0.75);
             delay(100);
         }
         else if( digitalRead(digitalPin[4]) == WHITE ){
-            MotorWriting(Tp*gasgasgas*0.95 * 1.05, Tp*gasgasgas);
+            MotorWriting(Tp*gasgasgas*0.75 * 1.05, Tp*gasgasgas);
             delay(100);
         }else{
             delay(100);
@@ -243,7 +243,7 @@ void carRIGHT(){
     }
 
 
-    MotorWriting(1.25 * Tp, Tp / 7);
+    MotorWriting(1.2 * Tp, Tp / 6.5);
     delay(333);
     while ( digitalRead(digitalPin[1]) == WHITE && digitalRead(digitalPin[2]) == WHITE )
     {
@@ -262,11 +262,11 @@ void carLEFT(){
     }
 
 
-    MotorWriting(Tp / 6, 1.2 * Tp);
-    delay(350);
+    MotorWriting(Tp / 5.5, 1.2 * Tp);
+    delay(330);
     while ( digitalRead(digitalPin[2]) == WHITE && digitalRead(digitalPin[3]) == WHITE )
     {
-        MotorWriting(Tp / 1.9, 1.2 * Tp);
+        MotorWriting(Tp / 1.9, 1.15 * Tp);
     }
     MotorWriting(Tp*1.30, Tp*0.97);
     delay(119);

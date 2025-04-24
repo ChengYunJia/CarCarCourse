@@ -28,8 +28,8 @@ int rightBoarder = 0;
 int instructIndex = 0;
 int command = STOP;
 // char defaultInstruct[500] = "fflfbfrrlr2llfr2fs";
-char defaultInstruct[500] = "fllfr2fbrffr2flfbfrf2llr2llflbf2lffr2lfflbrfflbrfflbf2lfrr2lrr2flfbfrrfbrrs";
-// char defaultInstruct[500] = "f222222222222";
+// char defaultInstruct[500] = "fllfr2fbrffr2flfbfrf2llr2llflbf2lffr2lfflbrfflbrfflbf2lfrr2lrr2flfbfrrfbrrs";
+char defaultInstruct[500] = "";
 
 
 bool canReadCard()
@@ -66,7 +66,7 @@ void handleReceived(){
         command = RIGHT;
         break;
 
-        case 'b':
+        case 'p':
         /* code */
         command = UTURN;
         break;
@@ -76,7 +76,7 @@ void handleReceived(){
         /* code */
         break;
 
-        case '2':
+        case 'q':
         command = UTURNR;
         /* code */
         break;
@@ -118,13 +118,16 @@ void handleCard()
     // Read UID and send it via Bluetooth
     // Serial.print("UID");
     BTSerial.println("UID");
-    // BTSerial.write("UID");
+
+    char buffer[3];
 
     for (byte i = 0; i < mfrc522.uid.size; i++)
     {
-        Serial.print(mfrc522.uid.uidByte[i], HEX);
-        BTSerial.print(mfrc522.uid.uidByte[i], HEX);
 
+        sprintf(buffer, "%02X", mfrc522.uid.uidByte[i]); // 2-digit uppercase hex
+        Serial.print(buffer);
+        BTSerial.print(buffer);
+        
         // if (i < mfrc522.uid.size - 1)
         // {
         //     Serial.print(":");
@@ -140,7 +143,7 @@ void handleCard()
     mfrc522.PCD_StopCrypto1();
 
     // Delay to prevent multiple rapid reads of the same card
-    delay(100);
+    delay(30);
 }
 
 void btSetup()

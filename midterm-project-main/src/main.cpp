@@ -15,13 +15,21 @@ void setup()
     rfidSetup();
     // delay(20000);
     // BTSerial.println("z");
-    while(rightBoarder<=1){
+    while(rightBoarder<=2){
         handleMessage();
     } // start when connected to bt
 }
 
 void loop()
 {
+    mfrc522.PCD_WriteRegister(MFRC522::TModeReg, 0x80);
+    mfrc522.PCD_WriteRegister(MFRC522::TPrescalerReg, 0xA9);
+    mfrc522.PCD_WriteRegister(MFRC522::TReloadRegH, 0x03);
+    mfrc522.PCD_WriteRegister(MFRC522::TReloadRegL, 0xE8);
+    mfrc522.PCD_WriteRegister(MFRC522::TxASKReg, 0x40);
+    mfrc522.PCD_WriteRegister(MFRC522::ModeReg, 0x3D);
+    mfrc522.PCD_AntennaOn();
+    
     handleMessage();
     // handleCommand();
 
