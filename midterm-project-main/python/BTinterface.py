@@ -22,7 +22,7 @@ class BTInterface:
             port = input("PC bluetooth port name: ")
 
     def start(self):
-        input("Press enter to start.")
+        #input("Press enter to start.")
         self.bt.serial_write_string("s")
 
     def get_UID(self):

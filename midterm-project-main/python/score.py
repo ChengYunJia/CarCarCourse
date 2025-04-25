@@ -107,6 +107,7 @@ class ScoreboardServer(Scoreboard):
         log.info(res)
 
     def add_UID(self, UID_str: str) -> Tuple[int, float]:
+        print("UID:", UID_str)
         """Send {UID_str} to server to update score. Returns nothing."""
         log.debug(f"Adding UID: {UID_str}")
 

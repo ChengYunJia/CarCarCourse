@@ -19,7 +19,7 @@ log = logging.getLogger(__name__)
 # TODO : Fill in the following information
 TEAM_NAME = "ThursdayTeam3"
 SERVER_URL = "http://140.112.175.18:5000/"
-MAZE_FILE = "python/data/medium_maze.csv"
+MAZE_FILE = r"D:\Document\code\Car_Project\midterm-project-main\python\data\quiz.csv"
 BT_PORT = "COM9"
 
 
@@ -46,10 +46,9 @@ def main(mode: str, bt_port: str, team_name: str, server_url: str, maze_file: st
     if mode == "0":
         log.info("Mode 0: For treasure-hunting")
         interface.start()
-        interface.send_action(maze.cmds[0])
-        maze.cmds = maze.cmds = maze.cmds[1:]
-        interface.send_action(maze.cmds[0])
-        maze.cmds = maze.cmds = maze.cmds[1:]
+        for i in range(3):
+            interface.send_action(maze.cmds[0])
+            maze.cmds = maze.cmds = maze.cmds[1:]
         while(True):
             Get = interface.bt.serial_read_string().strip()
             print(repr(Get))
@@ -65,12 +64,10 @@ def main(mode: str, bt_port: str, team_name: str, server_url: str, maze_file: st
                     break
             elif(Get == 'UID'):
                 print("received UID")
-                GetUID = interface.bt.serial_read_string().strip()
+                GetUID = interface.bt.serial_read_byte()
                 print(GetUID)
                 if(GetUID):
                     point.add_UID(GetUID)
-                    #current_score = point.get_current_score()
-                    #log.info(f"Current score: {current_score}")
 
 
     elif mode == "1":

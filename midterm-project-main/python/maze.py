@@ -16,28 +16,32 @@ start_time = process_time()
 
 class Action(IntEnum):
     ADVANCE = 1
-    U_TURN = 2
-    TURN_RIGHT = 3
-    TURN_LEFT = 4
-    HALT = 5
+    TURN_RIGHT = 2
+    TURN_LEFT = 3
+    U_TURN_R = 4
+    U_TURN_L = 5
+    HALT = 6
+    
 
 class Duration(IntEnum):
-    ADVANCE = 700 #unit ms
-    U_TURN = 1200
+    ADVANCE = 800 #unit ms
+    U_TURN_L = 1600
+    U_TURN_R = 1600
     TURN_RIGHT = 900
     TURN_LEFT = 900
+
 
 class Maze:
 
     def __init__(self, filepath: str = r"D:\Document\code\Car_project\midterm-project-main\big_maze_113.csv"):
         self.raw_data = pd.read_csv(filepath, index_col="index").fillna(-1)
-        num_nodes = len(self.raw_data)
+        self.num_nodes = len(self.raw_data)
         self.raw_data = self.raw_data.values
         self.rows = 6
         #from csv to node
         self.nodes = dict()  # key: index, value: the correspond node
         self.start_node = Node()
-        for i in range(num_nodes):
+        for i in range(self.num_nodes):
             cur = Node(i + 1)
             for j in range(4):
                if(self.raw_data[i][j] != -1): 
@@ -66,21 +70,6 @@ class Maze:
         self.actions.clear()
         for i in range(1, len(self.nodes) + 1):
             self.nodes[i].prev = -2
-
-    # a distance criteria
-    def path_time(self):
-        TimeCount = 0
-        for num in self.actions:
-            match num:
-                case Action.ADVANCE:
-                    TimeCount += Duration.ADVANCE
-                case Action.TURN_LEFT:
-                    TimeCount += Duration.TURN_LEFT
-                case Action.TURN_RIGHT:
-                    TimeCount += Duration.TURN_RIGHT
-                case Action.U_TURN:
-                    TimeCount += Duration.U_TURN
-        return TimeCount
     
     # find treasure point and set up neighboring treasures' distance and path
     def set_treasure_info(self):
@@ -95,8 +84,7 @@ class Maze:
             for node2 in self.treasures:
                 if(node1.index != node2.index):
                     self.BFS(node1, node2)
-                    cmd = self.actions_to_str()[1:]
-                    self.treasure_info[node1.index][node2.index] = [self.count_time(), self.count_score(node2), cmd]
+                    self.treasure_info[node1.index][node2.index] = [self.count_time(), self.count_score(node2), self.actions_to_str()]
                     self.clear()
                 else:
                     self.treasure_info[node1.index][node2.index] = ['']
@@ -111,8 +99,10 @@ class Maze:
                     time += Duration.TURN_LEFT
                 case Action.TURN_RIGHT:
                     time += Duration.TURN_RIGHT
-                case Action.U_TURN:
-                    time += Duration.U_TURN
+                case Action.U_TURN_L:
+                    time += Duration.U_TURN_L
+                case Action.U_TURN_R:
+                    time += Duration.U_TURN_R
         return time
 
     def count_score(self, node: Node):
@@ -120,7 +110,7 @@ class Maze:
         nodey = (node.index - 1)%self.rows
         start_nodex = (self.start_node.index - 1)//self.rows
         start_nodey = (self.start_node.index - 1)%self.rows
-        return 10*(abs(nodex - start_nodex) + abs(nodey - start_nodey))
+        return 30*(abs(nodex - start_nodex) + abs(nodey - start_nodey))
 
     # do the node queue by bfs
     def BFS(self, start: Node, end: Node):
@@ -171,11 +161,21 @@ class Maze:
                     case Direction.WEST:
                         self.actions.append(Action.TURN_LEFT)
                     case Direction.SOUTH:
-                        self.actions.append(Action.U_TURN)
+                        if(node_from.index >= 1 and node_from.index <= self.rows):
+                            self.actions.append(Action.U_TURN_L)
+                        elif(node_from.index > self.num_nodes - self.rows):
+                            self.actions.append(Action.U_TURN_R)
+                        else:
+                            self.actions.append(Action.U_TURN_R)
             case Direction.SOUTH:
                 match turnface:
                     case Direction.NORTH:
-                        self.actions.append(Action.U_TURN)
+                        if(node_from.index >= 1 and node_from.index <= self.rows):
+                            self.actions.append(Action.U_TURN_R)
+                        elif(node_from.index > self.num_nodes - self.rows):
+                            self.actions.append(Action.U_TURN_L)
+                        else:
+                            self.actions.append(Action.U_TURN_R)
                     case Direction.EAST:
                         self.actions.append(Action.TURN_LEFT)
                     case Direction.WEST:
@@ -189,7 +189,12 @@ class Maze:
                     case Direction.EAST:
                         self.actions.append(Action.ADVANCE)
                     case Direction.WEST:
-                        self.actions.append(Action.U_TURN)
+                        if(node_from.index % self.rows == 1):
+                            self.actions.append(Action.U_TURN_R)
+                        elif(node_from.index % self.rows == 0):
+                            self.actions.append(Action.U_TURN_L)
+                        else:
+                            self.actions.append(Action.U_TURN_R)
                     case Direction.SOUTH:
                         self.actions.append(Action.TURN_RIGHT)
             case Direction.WEST:
@@ -197,7 +202,12 @@ class Maze:
                     case Direction.NORTH:
                         self.actions.append(Action.TURN_RIGHT)
                     case Direction.EAST:
-                        self.actions.append(Action.U_TURN)
+                        if(node_from.index % self.rows == 1):
+                            self.actions.append(Action.U_TURN_L)
+                        elif(node_from.index % self.rows == 0):
+                            self.actions.append(Action.U_TURN_R)
+                        else:
+                            self.actions.append(Action.U_TURN_R)
                     case Direction.WEST:
                         self.actions.append(Action.ADVANCE)
                     case Direction.SOUTH:
@@ -208,17 +218,17 @@ class Maze:
     def getActions(self):
         # TODO : given a sequence of nodes, return the corresponding action sequence
         car_dir = self.path[0].get_direction_to(self.path[1])
-        for i in range(len(self.path) - 1):
+        for i in range(1, len(self.path) - 1):
             self.getAction(car_dir, self.path[i], self.path[i + 1])
             car_dir = self.path[i].get_direction_to(self.path[i + 1])
-        self.actions.append(Action.U_TURN) # when arrive a treasure you should uturn
+        self.getAction(car_dir, self.path[-1], self.path[-2])
         # Tips : iterate through the nodes and use getAction() in each iteration
         return None
     
     # turn actions list to cmds string
     def actions_to_str(self):
         # cmds should be a string sequence like "fbrl....", use it as the input of BFS checklist #1
-        cmd = "fbrls" # forward, backward, turn right, turn left, stop
+        cmd = "frlqps" # forward, turn right, turn left, uturn  stop
         cmds = ""
         for action in self.actions:
             cmds += cmd[action - 1]
@@ -239,7 +249,7 @@ class Maze:
     #maze = Maze()
     #maze setting
 def solve_maze(maze: Maze):
-    maze.set_start_node(3)
+    maze.set_start_node(24)
 
     #container for DFS
     for node in maze.nodes.values():
@@ -270,7 +280,7 @@ def solve_maze(maze: Maze):
             total_time, score = 0, 0
             for i in range(len(node_path) - 1):  
                 total_time += maze.treasure_info[node_path[i].index][node_path[i + 1].index][0]
-                if(total_time >= 100000):
+                if(total_time >= 69000):
                     break
                 score += maze.treasure_info[node_path[i].index][node_path[i + 1].index][1]
             if(score > maze.max_scores):
